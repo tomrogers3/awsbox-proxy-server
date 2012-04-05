@@ -5,6 +5,7 @@
 /var
 /ver.txt
 /.*
+!/.bashrc
 !/.gitignore
 /git
 /key.pem
