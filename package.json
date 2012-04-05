@@ -1,0 +1,9 @@
+{
+  "name": "awsbox-proxy",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "connect": "2.1.0",
+    "http-proxy": "0.8.0"
+  }
+}
