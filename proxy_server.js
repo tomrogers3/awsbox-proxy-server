@@ -16,6 +16,10 @@ var proxy = new httpProxy.HttpProxy({
 });
 
 var server = http.createServer(function (req, res) {
+  if (req.url === '/ver.txt') {
+    res.setHeader('Content-Type', 'text/plain');
+    return res.end(fs.readFileSync('/home/app/ver.txt'));
+  }
   // Proxy normal HTTP requests
   proxy.proxyRequest(req, res);
 });
