@@ -26,11 +26,18 @@ var proxy = new httpProxy.HttpProxy({
   }
 });
 
-var server = http.createServer(function (req, res) {
+function handleVerRequest(req, res) {
   if (req.url === '/ver.txt') {
     res.setHeader('Content-Type', 'text/plain');
-    return res.end(fs.readFileSync('/home/app/ver.txt'));
+    res.end(fs.readFileSync('/home/app/ver.txt'));
+    return true;
   }
+  return false;
+}
+
+var server = http.createServer(function (req, res) {
+  if (handleVerRequest(req, res)) return;
+
   // Proxy normal HTTP requests if sslConfig != 'force',
   // otherwise issue a redirect
   if (sslConfig === 'force') {
@@ -68,6 +75,8 @@ if (['enable','force'].indexOf(sslConfig) != -1) {
     key: fs.readFileSync(path.join(process.env['HOME'], 'key.pem'), 'utf8'),
     cert: fs.readFileSync(path.join(process.env['HOME'], 'cert.pem'), 'utf8')
   }, function (req, res) {
+    if (handleVerRequest(req, res)) return;
+
     proxy.proxyRequest(req, res);
   }).listen(8443);
 }
