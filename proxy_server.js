@@ -36,22 +36,24 @@ function handleVerRequest(req, res) {
 }
 
 var server = http.createServer(function (req, res) {
-  if (handleVerRequest(req, res)) return;
+  connect.compress()(req, res, function () {
+    if (handleVerRequest(req, res)) return;
 
-  // Proxy normal HTTP requests if sslConfig != 'force',
-  // otherwise issue a redirect
-  if (sslConfig === 'force') {
-    var url = 'https://';
-    if (!req.headers.host) {
-      res.writeHead(400, "host header required");
-      return res.end();
+    // Proxy normal HTTP requests if sslConfig != 'force',
+    // otherwise issue a redirect
+    if (sslConfig === 'force') {
+      var url = 'https://';
+      if (!req.headers.host) {
+        res.writeHead(400, "host header required");
+        return res.end();
+      }
+      url += req.headers.host + req.url;
+      res.writeHead(301, { 'Location': url });
+      res.end();
+    } else {
+      proxy.proxyRequest(req, res);
     }
-    url += req.headers.host + req.url;
-    res.writeHead(301, { 'Location': url });
-    res.end();
-  } else {
-    proxy.proxyRequest(req, res);
-  }
+  });
 });
 
 server.on('upgrade', function(req, socket, head) {
@@ -75,8 +77,10 @@ if (['enable','force'].indexOf(sslConfig) != -1) {
     key: fs.readFileSync(path.join(process.env['HOME'], 'key.pem'), 'utf8'),
     cert: fs.readFileSync(path.join(process.env['HOME'], 'cert.pem'), 'utf8')
   }, function (req, res) {
-    if (handleVerRequest(req, res)) return;
+    connect.compress()(req, res, function () {
+      if (handleVerRequest(req, res)) return;
 
-    proxy.proxyRequest(req, res);
+      proxy.proxyRequest(req, res);
+    });
   }).listen(8443);
 }
