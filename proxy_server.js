@@ -82,5 +82,12 @@ if (['enable','force'].indexOf(sslConfig) != -1) {
 
       proxy.proxyRequest(req, res);
     });
-  }).listen(8443);
+  })
+
+  sslServer.on('upgrade', function(req, socket, head) {
+    // Proxy secure websocket requests too
+    proxy.proxyWebSocketRequest(req, socket, head);
+  });
+
+  sslServer.listen(8443);
 }
