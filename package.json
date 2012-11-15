@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "connect": "2.1.0",
-    "http-proxy": "git://github.com/lloyd/node-http-proxy.git",
-    "forever": "0.8.5"
+    "connect": ">=2.1.0",
+    "http-proxy": ">=0.8.0",
+    "forever": ">=0.8.5"
   }
 }
